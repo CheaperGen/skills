@@ -16,7 +16,7 @@ The repo has two parts:
 /plugin install cheapergen@cheapergen
 ```
 
-Then run `/mcp`, select **cheapergen** and choose **Authenticate**. Sign in at cheapergen.com and approve the connection. From a terminal, the same steps are:
+Then run `/mcp`, select **plugin:cheapergen:cheapergen** and choose **Authenticate**. Sign in at cheapergen.com and approve the connection. From a terminal, the same steps are:
 
 ```bash
 claude plugin marketplace add CheaperGen/skills
@@ -48,7 +48,7 @@ mkdir -p ~/.claude/skills/cheapergen
 curl -fsSL https://cheapergen.com/skills/cheapergen/SKILL.md -o ~/.claude/skills/cheapergen/SKILL.md
 ```
 
-In the Claude apps (claude.ai and Claude Desktop), zip the `cheapergen` folder and upload it as a custom skill. To connect the MCP server there, add `https://cheapergen.com/api/mcp` as a custom connector.
+In the Claude apps (claude.ai and Claude Desktop), zip the `cheapergen` folder and upload it as a custom skill. To connect the MCP server there, add `https://cheapergen.com/api/mcp` as a custom connector under **Customize → Connectors**.
 
 ## Authentication
 
