@@ -9,7 +9,7 @@ One async REST API for official video and image models. Billing comes from a pre
 
 - Base URL: `https://cheapergen.com/api/v1`
 - Auth: `Authorization: Bearer $CHEAPERGEN_API_KEY` (keys start with `cg_live_`; create one at https://cheapergen.com/dashboard/keys). Read the key from the environment. Never print it, log it or commit it.
-- **Prefer the MCP server when it's connected.** Its tools are `list_models`, `get_model`, `quote`, `generate` (with `wait_seconds` and a `max_cost_usd` budget guard), `get_generation` and `get_account`; use them instead of HTTP calls. The workflow below is the same. To connect it, add the remote server `https://cheapergen.com/api/mcp`; the user signs in and approves in the browser (OAuth), with no key needed. In Claude Code: `claude mcp add --transport http cheapergen https://cheapergen.com/api/mcp`, then `/mcp` → Authenticate. Full setup: https://cheapergen.com/docs/mcp
+- **Prefer the MCP server when it's connected.** Its tools are `list_models`, `get_model`, `quote`, `generate` (with `wait_seconds` and a `max_cost_usd` budget guard), `get_generation`, `get_account` and `add_credits` (a payment link the user opens when the balance is low); use them instead of HTTP calls. The workflow below is the same. To connect it, add the remote server `https://cheapergen.com/api/mcp`; the user signs in and approves in the browser (OAuth), with no key needed. In Claude Code: `claude mcp add --transport http cheapergen https://cheapergen.com/api/mcp`, then `/mcp` → Authenticate. Full setup: https://cheapergen.com/docs/mcp
 
 ## Workflow
 
@@ -75,7 +75,7 @@ When the job finishes (succeeded or failed), we POST `{ "type": "generation.succ
 
 - Prices are per second of output video or per image. `GET /models` shows each tier's `price_usd` next to `list_price_usd` (the official price).
 - On submit, the quoted price is held (`cost.estimated: true`). On success it becomes final; on failure or cancel it's refunded in full (`cost.amount_usd: 0`). `cost.official_usd` and `cost.saved_usd` show the savings.
-- Balance: `GET /account` returns `balance_usd` and `reserved_usd` (held for jobs in progress). A 402 means the balance is too low; the user adds credits at https://cheapergen.com/dashboard/billing.
+- Balance: `GET /account` returns `balance_usd` and `reserved_usd` (held for jobs in progress). A 402 means the balance is too low: over MCP, call `add_credits` and show the user the payment link; otherwise the user adds credits at https://cheapergen.com/dashboard/billing.
 - Cancel a queued job with `POST /generations/{id}/cancel` (409 once it's running). Delete a finished one with `DELETE /generations/{id}`.
 
 ## Errors
@@ -86,7 +86,7 @@ Every error has the shape `{ "error": { "code", "message", "param"? } }`.
 |---|---|---|
 | 400 | `invalid_request` | Fix the field named in `param` (check the schema, enums, limits and mentions). Don't retry unchanged. |
 | 401 | `unauthorized` | Missing, invalid or revoked key. |
-| 402 | `insufficient_balance` | Ask the user to top up, or choose a cheaper tier. |
+| 402 | `insufficient_balance` | Get a payment link with `add_credits` (MCP) and ask the user to pay, or choose a cheaper tier. |
 | 404 | `not_found` | Wrong endpoint or generation id. |
 | 409 | `conflict` | E.g. canceling a job that already started. |
 | 429 | `rate_limited` | Back off and retry. The limit is about 20 requests in a burst, refilled at 10/s per key, plus a cap on concurrent generations per account (default 20). |
