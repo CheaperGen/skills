@@ -1,0 +1,21 @@
+{
+  "name": "cheapergen",
+  "displayName": "Cheaper Gen.",
+  "version": "1.0.0",
+  "description": "Generate AI video and images with official ByteDance Seedance and Seedream, Alibaba Wan and MiniMax models below their official prices. Includes the cheapergen Agent Skill (REST API guide) and the hosted MCP server.",
+  "author": {
+    "name": "Cheaper Gen.",
+    "email": "support@cheapergen.com",
+    "url": "https://cheapergen.com"
+  },
+  "homepage": "https://cheapergen.com/docs/mcp",
+  "repository": "https://github.com/CheaperGen/skills",
+  "license": "MIT",
+  "keywords": ["video-generation", "image-generation", "seedance", "seedream", "wan", "minimax", "mcp", "text-to-video", "image-to-video"],
+  "mcpServers": {
+    "cheapergen": {
+      "type": "http",
+      "url": "https://cheapergen.com/api/mcp"
+    }
+  }
+}

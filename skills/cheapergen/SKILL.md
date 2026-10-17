@@ -9,7 +9,7 @@ One async REST API for official video and image models. Billing comes from a pre
 
 - Base URL: `https://cheapergen.com/api/v1`
 - Auth: `Authorization: Bearer $CHEAPERGEN_API_KEY` (keys start with `cg_live_`; create one at https://cheapergen.com/dashboard/keys). Read the key from the environment. Never print it, log it or commit it.
-- If the `cheapergen` MCP server is connected (tools `list_models`, `get_model`, `quote`, `generate`, `get_generation`, `get_account`), use those tools instead of HTTP calls. The workflow below is the same.
+- **Prefer the MCP server when it's connected.** Its tools are `list_models`, `get_model`, `quote`, `generate` (with `wait_seconds` and a `max_cost_usd` budget guard), `get_generation` and `get_account`; use them instead of HTTP calls. The workflow below is the same. To connect it, add the remote server `https://cheapergen.com/api/mcp`; the user signs in and approves in the browser (OAuth), with no key needed. In Claude Code: `claude mcp add --transport http cheapergen https://cheapergen.com/api/mcp`, then `/mcp` → Authenticate. Full setup: https://cheapergen.com/docs/mcp
 
 ## Workflow
 
@@ -98,5 +98,6 @@ A generation that ends `failed` has `error.code` (e.g. `generation_failed`, `tim
 ## More
 
 - Docs: https://cheapergen.com/docs, MCP setup: https://cheapergen.com/docs/mcp
+- Source of this skill and the Claude Code plugin: https://github.com/CheaperGen/skills
 - Per-model API pages: `https://cheapergen.com/models/{vendor}/{model}/api`
 - Machine-readable summary: https://cheapergen.com/llms.txt

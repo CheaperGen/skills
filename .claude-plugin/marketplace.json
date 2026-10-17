@@ -1,0 +1,17 @@
+{
+  "name": "cheapergen",
+  "owner": {
+    "name": "Cheaper Gen.",
+    "email": "support@cheapergen.com",
+    "url": "https://cheapergen.com"
+  },
+  "description": "Cheaper Gen. for Claude Code: generate AI video and images with official Seedance, Seedream, Wan and MiniMax models below list price.",
+  "plugins": [
+    {
+      "name": "cheapergen",
+      "source": "./",
+      "description": "Agent Skill for the Cheaper Gen. API plus the hosted Cheaper Gen. MCP server (sign in with OAuth, no API key needed).",
+      "category": "media"
+    }
+  ]
+}
