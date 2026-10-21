@@ -1,21 +1,20 @@
 ---
 name: cheapergen
-description: Generate AI videos and images with the Cheaper Gen. API (cheapergen.com), which runs official ByteDance Seedance and Seedream, Alibaba Wan and MiniMax models below their official prices. Use when the user wants to create a video or image with these models, add text-to-video, image-to-video, reference-to-video, text-to-image or image editing to code, or work with a CHEAPERGEN_API_KEY or cg_live_ key. Covers picking a model, quoting the price, submitting, polling or webhooks, @Image1-style reference mentions, uploads, billing and errors.
+description: Generate AI videos and images with the CheaperGen API (cheapergen.com), which runs official video and image models from the major labs (for example Seedance, Seedream, Kling, Veo, Wan, MiniMax, Vidu, FLUX, GPT Image and Nano Banana; the live list is at /api/v1/models) below their official prices. Use when the user wants to create a video or image with these models, add text-to-video, image-to-video, reference-to-video, text-to-image or image editing to code, or work with a CHEAPERGEN_API_KEY or cg_live_ key. Covers picking a model, quoting the price, submitting, polling or webhooks, @Image1-style reference mentions, uploads, billing and errors.
 ---
 
-# Cheaper Gen. API
+# CheaperGen API
 
 One async REST API for official video and image models. Billing comes from a prepaid USD balance: you pay per second of video or per image, and failed generations are refunded automatically.
 
 - Base URL: `https://cheapergen.com/api/v1`
 - Auth: `Authorization: Bearer $CHEAPERGEN_API_KEY` (keys start with `cg_live_`; create one at https://cheapergen.com/dashboard/keys). Read the key from the environment. Never print it, log it or commit it.
-- **Prefer the MCP server when it's connected.** Its tools are `list_models`, `get_model`, `quote`, `generate` (with `wait_seconds` and a `max_cost_usd` budget guard), `get_generation`, `get_account` and `add_credits` (a payment link the user opens when the balance is low); use them instead of HTTP calls. The workflow below is the same. To connect it, add the remote server `https://cheapergen.com/api/mcp`; the user signs in and approves in the browser (OAuth), with no key needed. In Claude Code: `claude mcp add --transport http cheapergen https://cheapergen.com/api/mcp`, then `/mcp` → Authenticate. Full setup: https://cheapergen.com/docs/mcp
+- **Prefer the MCP server when it's connected.** Its tools are `list_models`, `get_model`, `quote`, `generate` (with `wait_seconds`, a `max_cost_usd` budget guard and `allow_fallback_price`), `get_generation`, `get_account` and `add_credits` (a payment link the user opens when the balance is low); use them instead of HTTP calls. The workflow below is the same. To connect it, add the remote server `https://cheapergen.com/api/mcp`; the user signs in and approves in the browser (OAuth), with no key needed. In Claude Code: `claude mcp add --transport http cheapergen https://cheapergen.com/api/mcp`, then `/mcp` → Authenticate. Full setup: https://cheapergen.com/docs/mcp
 
 ## Workflow
 
 1. **Pick a model**: `GET /models` (public). It returns every model with `endpoints[].id` and price tiers. Always use the live list; models change.
-   - Video: Seedance 2.0 (best quality, 4K, synced audio), Seedance 2.0 Fast / Mini (cheaper and faster), Seedance 2.5 (newest, longest references), Wan 3.0 / Prime (Alibaba), MiniMax H3 / H3 Max.
-   - Image: Seedream 5.0 Pro / Lite / Flash (text-to-image and `edit`).
+   - The catalog spans video models (for example Seedance, Kling, Veo, Wan, MiniMax, Vidu, PixVerse, LTX) and image models (for example Seedream, FLUX, GPT Image, Nano Banana, Grok, Qwen Image, Krea), and grows: read the list rather than assuming.
    - Endpoint ids are `{vendor}/{model}/{mode}`, e.g. `bytedance/seedance-2.0-fast/text-to-video`, `bytedance/seedream-5.0-lite/text-to-image`.
 2. **Read the input schema**: `GET /models/{vendor}/{model}` (public) returns `endpoints[].input_schema` (JSON Schema with enums, defaults and limits) and `pricing.tiers`. Send only fields from the schema: unknown fields are rejected with 400.
 3. **Quote**: `POST /quote/{endpoint}` with the input (public, free) returns `{ amount_usd, list_usd, discount_pct, available }`. Before an expensive job (video at 1080p/4K, long durations, batches), tell the user the price.
@@ -77,6 +76,8 @@ When the job finishes (succeeded or failed), we POST `{ "type": "generation.succ
 - On submit, the quoted price is held (`cost.estimated: true`). On success it becomes final; on failure or cancel it's refunded in full (`cost.amount_usd: 0`). `cost.official_usd` and `cost.saved_usd` show the savings.
 - Balance: `GET /account` returns `balance_usd` and `reserved_usd` (held for jobs in progress). A 402 means the balance is too low: over MCP, call `add_credits` and show the user the payment link; otherwise the user adds credits at https://cheapergen.com/dashboard/billing.
 - Cancel a queued job with `POST /generations/{id}/cancel` (409 once it's running). Delete a finished one with `DELETE /generations/{id}`.
+- **Emergency price.** When the usual capacity for a request is unavailable it can run on pricier capacity at the emergency price, never above the model's official price. `allow_fallback_price` (on `/run` and MCP `generate`) defaults to `true`: a new request is quoted and charged it, and an accepted job whose capacity fails mid-way may move to it. `max_cost_usd` caps it. Send `allow_fallback_price: false` to never pay more than the standard price (`503 fallback_price_declined` at submit; an accepted job fails and is refunded instead). When it applies, `/quote` and the generation's `pricing.fallback` say so: tell the user.
+- **Safety checker.** Models whose input schema lists `enable_safety_checker` (default `true`) can run without our safety checker: send `enable_safety_checker: false` in `input`, only when the user asks. It is always on in the Studio; closed models' own filters always apply; the Acceptable Use Policy (https://cheapergen.com/legal/acceptable-use) still applies.
 
 ## Errors
 
@@ -92,6 +93,8 @@ Every error has the shape `{ "error": { "code", "message", "param"? } }`.
 | 429 | `rate_limited` | Back off and retry. The limit is about 20 requests in a burst, refilled at 10/s per key, plus a cap on concurrent generations per account (default 20). |
 | 502 | `upstream_error` | Retry once, then try another model. |
 | 503 | `model_unavailable` | Retry later or switch models. |
+| 503 | `fallback_price_declined` | Only the emergency price is available and you sent `allow_fallback_price: false`: retry later, or accept it. |
+| 400 | `max_cost_exceeded` | The price is above `max_cost_usd`: confirm with the user, then raise it. |
 
 A generation that ends `failed` has `error.code` (e.g. `generation_failed`, `timeout`) and has been refunded. Retry at most once with the same input.
 

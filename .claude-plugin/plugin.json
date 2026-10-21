@@ -1,10 +1,10 @@
 {
   "name": "cheapergen",
-  "displayName": "Cheaper Gen.",
+  "displayName": "CheaperGen",
   "version": "1.0.0",
-  "description": "Generate AI video and images with official ByteDance Seedance and Seedream, Alibaba Wan and MiniMax models below their official prices. Includes the cheapergen Agent Skill (REST API guide) and the hosted MCP server.",
+  "description": "Generate AI video and images with official models from the major labs (Seedance, Kling, Veo, Wan, MiniMax, FLUX, GPT Image, Nano Banana and more) below their official prices. Includes the cheapergen Agent Skill (REST API guide) and the hosted MCP server.",
   "author": {
-    "name": "Cheaper Gen.",
+    "name": "CheaperGen",
     "email": "support@cheapergen.com",
     "url": "https://cheapergen.com"
   },

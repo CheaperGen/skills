@@ -1,11 +1,11 @@
-# Cheaper Gen. skills
+# CheaperGen skills
 
-Agent Skills and a Claude Code plugin for [Cheaper Gen.](https://cheapergen.com), one API for official ByteDance Seedance and Seedream, Alibaba Wan and MiniMax video and image models at prices below the official list.
+Agent Skills and a Claude Code plugin for [CheaperGen](https://cheapergen.com), one API for official video and image models from the major labs (Seedance, Kling, Veo, Wan, MiniMax, FLUX, GPT Image, Nano Banana and more) at prices below the official list.
 
 The repo has two parts:
 
-- **The `cheapergen` skill** ([`skills/cheapergen/SKILL.md`](skills/cheapergen/SKILL.md)) teaches an agent the Cheaper Gen. REST API. It covers choosing a model, reading its input schema, quoting, submitting, polling or webhooks, `@Image1`-style reference mentions, uploads, pricing and errors. It works in any agent that supports [Agent Skills](https://agentskills.io).
-- **The Claude Code plugin `cheapergen`** bundles that skill with the hosted Cheaper Gen. MCP server, `https://cheapergen.com/api/mcp`. The server's tools are `list_models`, `get_model`, `quote`, `generate`, `get_generation`, `get_account` and `add_credits` (a payment link the user opens when the balance is low). You sign in with your Cheaper Gen. account in the browser, so there's no API key to paste.
+- **The `cheapergen` skill** ([`skills/cheapergen/SKILL.md`](skills/cheapergen/SKILL.md)) teaches an agent the CheaperGen REST API. It covers choosing a model, reading its input schema, quoting, submitting, polling or webhooks, `@Image1`-style reference mentions, uploads, pricing and errors. It works in any agent that supports [Agent Skills](https://agentskills.io).
+- **The Claude Code plugin `cheapergen`** bundles that skill with the hosted CheaperGen MCP server, `https://cheapergen.com/api/mcp`. The server's tools are `list_models`, `get_model`, `quote`, `generate`, `get_generation`, `get_account` and `add_credits` (a payment link the user opens when the balance is low). You sign in with your CheaperGen account in the browser, so there's no API key to paste.
 
 ## Install
 
