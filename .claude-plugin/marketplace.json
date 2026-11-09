@@ -12,6 +12,12 @@
       "source": "./",
       "description": "Agent Skill for the CheaperGen API plus the hosted CheaperGen MCP server (sign in with OAuth, no API key needed).",
       "category": "media"
+    },
+    {
+      "name": "cheapergen-dev",
+      "source": "./cheapergen-dev",
+      "description": "For developers integrating the CheaperGen API: the cheapergen-api skill plus the read-only CheaperGen Developer MCP server (models, input schemas, quotes, price comparisons and balance; never generates or spends).",
+      "category": "development"
     }
   ]
 }

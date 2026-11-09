@@ -5,7 +5,8 @@ Agent Skills and a Claude Code plugin for [CheaperGen](https://cheapergen.com), 
 The repo has two parts:
 
 - **The `cheapergen` skill** ([`skills/cheapergen/SKILL.md`](skills/cheapergen/SKILL.md)) teaches an agent the CheaperGen REST API. It covers choosing a model, reading its input schema, quoting, submitting, polling or webhooks, `@Image1`-style reference mentions, uploads, pricing and errors. It works in any agent that supports [Agent Skills](https://agentskills.io).
-- **The Claude Code plugin `cheapergen`** bundles that skill with the hosted CheaperGen MCP server, `https://cheapergen.com/api/mcp`. The server's tools are `list_models`, `get_model`, `quote`, `generate`, `get_generation`, `get_account` and `add_credits` (a payment link the user opens when the balance is low). You sign in with your CheaperGen account in the browser, so there's no API key to paste.
+- **The Claude Code plugin `cheapergen`** bundles that skill with the hosted CheaperGen MCP server, `https://cheapergen.com/api/mcp`. The server's tools are `list_models`, `get_model`, `quote` (it also says whether your balance covers the job), `generate`, `get_generation`, `upload_file` (turns a local photo, video or audio file into an https URL to generate from; free), `compare_prices` (price against the official price and other API platforms; free), `get_account` (balance, and the account's API limits) and `add_credits` (a payment link the user opens when the balance is low). Finished images come back with a small inline preview in the chat. You sign in with your CheaperGen account in the browser, so there's no API key to paste.
+- **The Claude Code plugin `cheapergen-dev`** ([`cheapergen-dev/`](cheapergen-dev)) is for developers integrating the API: the `cheapergen-api` skill ([`cheapergen-dev/skills/cheapergen-api/SKILL.md`](cheapergen-dev/skills/cheapergen-api/SKILL.md): API keys, endpoints, quotes, polling and webhooks, errors) plus the read-only CheaperGen Developer MCP server, `https://cheapergen.com/api/mcp/dev`. Its tools are `list_models`, `get_model`, `quote`, `compare_prices` (CheaperGen's live price against the official price and other API platforms, with the date each was checked and its source) and `get_account`. It never generates media, spends credits or creates payments.
 
 ## Install
 
@@ -22,6 +23,15 @@ Then run `/mcp`, select **plugin:cheapergen:cheapergen** and choose **Authentica
 claude plugin marketplace add CheaperGen/skills
 claude plugin install cheapergen@cheapergen
 ```
+
+### Claude Code plugin for developers (API skill + read-only MCP server)
+
+```
+/plugin marketplace add CheaperGen/skills
+/plugin install cheapergen-dev@cheapergen
+```
+
+Then run `/mcp`, select **plugin:cheapergen-dev:cheapergen-dev** and choose **Authenticate**. The connection can look up models, prices and quotes and read the balance; your code generates through the REST API with an API key.
 
 ### Skills CLI (Claude Code, Cursor, Codex, Gemini CLI and others)
 
@@ -48,7 +58,7 @@ mkdir -p ~/.claude/skills/cheapergen
 curl -fsSL https://cheapergen.com/skills/cheapergen/SKILL.md -o ~/.claude/skills/cheapergen/SKILL.md
 ```
 
-In the Claude apps (claude.ai and Claude Desktop), zip the `cheapergen` folder and upload it as a custom skill. To connect the MCP server there, add `https://cheapergen.com/api/mcp` as a custom connector under **Customize → Connectors**.
+In the Claude apps (claude.ai and Claude Desktop), zip the `cheapergen` folder and upload it as a custom skill. To connect the MCP server there, [open this link](https://claude.ai/customize/connectors?modal=add-custom-connector&connectorName=CheaperGen&connectorUrl=https%3A%2F%2Fcheapergen.com%2Fapi%2Fmcp): it opens the custom connector dialog with CheaperGen filled in: choose **Continue**, then **Add**, then **Connect** and sign in. On Team and Enterprise, an owner uses [the organization link](https://claude.ai/admin-settings/connectors?modal=add-custom-connector&connectorName=CheaperGen&connectorUrl=https%3A%2F%2Fcheapergen.com%2Fapi%2Fmcp) and members then choose Connect (or switch to a personal account). Or add `https://cheapergen.com/api/mcp` as a custom connector under **Customize → Connectors** yourself. Every other client is on [cheapergen.com/agents](https://cheapergen.com/agents).
 
 ## Authentication
 
@@ -60,10 +70,14 @@ Generations are charged to your prepaid balance, and failed ones are refunded au
 ## Layout
 
 ```
-.claude-plugin/marketplace.json   Claude Code marketplace "cheapergen" (one plugin, source ./)
-.claude-plugin/plugin.json        plugin manifest + the remote MCP server
-skills/cheapergen/SKILL.md        the Agent Skill
+.claude-plugin/marketplace.json                 Claude Code marketplace "cheapergen" (plugins cheapergen, source ./, and cheapergen-dev)
+.claude-plugin/plugin.json                      plugin manifest + the remote MCP server
+skills/cheapergen/SKILL.md                      the Agent Skill
+cheapergen-dev/.claude-plugin/plugin.json       developer plugin manifest + the read-only MCP server (/api/mcp/dev)
+cheapergen-dev/skills/cheapergen-api/SKILL.md   the API integration skill
 ```
+
+Installed plugins update only when the `version` in their `plugin.json` changes, so every change to these files ships with a version bump (both plugins carry the same version). To get the latest version, run `claude plugin update cheapergen@cheapergen`, or turn on **Enable auto-update** for the `cheapergen` marketplace under `/plugin` → **Marketplaces** (marketplaces outside Anthropic's don't auto-update by default).
 
 ## Links
 
