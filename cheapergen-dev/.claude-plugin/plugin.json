@@ -1,8 +1,8 @@
 {
   "name": "cheapergen-dev",
   "displayName": "CheaperGen Developer",
-  "version": "1.4.0",
-  "description": "Integrate the CheaperGen API into your code: official video and image models from the major labs below their official prices. Includes the cheapergen-api skill (API keys, endpoints, quotes, polling and webhooks, errors) and the read-only CheaperGen Developer MCP server for looking up models, input schemas, prices and price comparisons while you build. The MCP server never generates media or spends credits.",
+  "version": "1.5.2",
+  "description": "Integrate the CheaperGen API into your code: official video and image models from the major labs below their official prices. Includes the cheapergen-api skill (API keys, endpoints, quotes, polling and webhooks, errors) and the read-only CheaperGen Developer MCP server for looking up models, input schemas, prices and price comparisons while you build, with no sign-in. The MCP server never generates media or spends credits.",
   "author": {
     "name": "CheaperGen",
     "email": "support@cheapergen.com",

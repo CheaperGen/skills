@@ -16,7 +16,7 @@
     {
       "name": "cheapergen-dev",
       "source": "./cheapergen-dev",
-      "description": "For developers integrating the CheaperGen API: the cheapergen-api skill plus the read-only CheaperGen Developer MCP server (models, input schemas, quotes, price comparisons and balance; never generates or spends).",
+      "description": "For developers integrating the CheaperGen API: the cheapergen-api skill plus the read-only CheaperGen Developer MCP server (models, input schemas, quotes and price comparisons with no sign-in, the balance with an API key; never generates or spends).",
       "category": "development"
     }
   ]

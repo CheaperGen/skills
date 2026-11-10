@@ -1,7 +1,7 @@
 {
   "name": "cheapergen",
   "displayName": "CheaperGen",
-  "version": "1.4.0",
+  "version": "1.5.2",
   "description": "Generate AI video and images with official models from the major labs (Seedance, Kling, Veo, Wan, MiniMax, FLUX, GPT Image, Nano Banana and more) below their official prices. Includes the cheapergen Agent Skill (REST API guide) and the hosted MCP server.",
   "author": {
     "name": "CheaperGen",

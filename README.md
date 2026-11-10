@@ -6,7 +6,7 @@ The repo has two parts:
 
 - **The `cheapergen` skill** ([`skills/cheapergen/SKILL.md`](skills/cheapergen/SKILL.md)) teaches an agent the CheaperGen REST API. It covers choosing a model, reading its input schema, quoting, submitting, polling or webhooks, `@Image1`-style reference mentions, uploads, pricing and errors. It works in any agent that supports [Agent Skills](https://agentskills.io).
 - **The Claude Code plugin `cheapergen`** bundles that skill with the hosted CheaperGen MCP server, `https://cheapergen.com/api/mcp`. The server's tools are `list_models`, `get_model`, `quote` (it also says whether your balance covers the job), `generate`, `get_generation`, `upload_file` (turns a local photo, video or audio file into an https URL to generate from; free), `compare_prices` (price against the official price and other API platforms; free), `get_account` (balance, and the account's API limits) and `add_credits` (a payment link the user opens when the balance is low). Finished images come back with a small inline preview in the chat. You sign in with your CheaperGen account in the browser, so there's no API key to paste.
-- **The Claude Code plugin `cheapergen-dev`** ([`cheapergen-dev/`](cheapergen-dev)) is for developers integrating the API: the `cheapergen-api` skill ([`cheapergen-dev/skills/cheapergen-api/SKILL.md`](cheapergen-dev/skills/cheapergen-api/SKILL.md): API keys, endpoints, quotes, polling and webhooks, errors) plus the read-only CheaperGen Developer MCP server, `https://cheapergen.com/api/mcp/dev`. Its tools are `list_models`, `get_model`, `quote`, `compare_prices` (CheaperGen's live price against the official price and other API platforms, with the date each was checked and its source) and `get_account`. It never generates media, spends credits or creates payments.
+- **The Claude Code plugin `cheapergen-dev`** ([`cheapergen-dev/`](cheapergen-dev)) is for developers integrating the API: the `cheapergen-api` skill ([`cheapergen-dev/skills/cheapergen-api/SKILL.md`](cheapergen-dev/skills/cheapergen-api/SKILL.md): API keys, endpoints, quotes, polling and webhooks, errors) plus the read-only CheaperGen Developer MCP server, `https://cheapergen.com/api/mcp/dev`. Its tools are `list_models`, `get_model`, `quote` and `compare_prices` (CheaperGen's live price against the official price and other API platforms, with the date each was checked and its source), with no sign-in; connected with an API key it also has `get_account` and quotes your own prices. It never generates media, spends credits or creates payments.
 
 ## Install
 
@@ -31,7 +31,11 @@ claude plugin install cheapergen@cheapergen
 /plugin install cheapergen-dev@cheapergen
 ```
 
-Then run `/mcp`, select **plugin:cheapergen-dev:cheapergen-dev** and choose **Authenticate**. The connection can look up models, prices and quotes and read the balance; your code generates through the REST API with an API key.
+It works right away, without sign-in: it looks up models, prices, quotes and price comparisons. Your code generates through the REST API with an API key. To also see your own prices and balance in the connection, add it with that key instead:
+
+```
+claude mcp add --transport http cheapergen-dev https://cheapergen.com/api/mcp/dev --header "Authorization: Bearer $CHEAPERGEN_API_KEY"
+```
 
 ### Skills CLI (Claude Code, Cursor, Codex, Gemini CLI and others)
 
